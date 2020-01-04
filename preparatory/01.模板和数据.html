@@ -34,7 +34,7 @@
                 this.$el = document.querySelector(options.el);
                 this._data = options.data
                 this.compiler()
-                this.rg = /\{\{(.+?)\}\}/g // 正则表达式 匹配括号
+                this.rg = /\{\{(.+?)\}\}/ // 正则表达式 匹配括号
             }
             compiler() {
                 this._Vnode = this.getVirtualDom(this.$el)
@@ -79,7 +79,11 @@
                 let type = vnode.type;
                 let el = null
                 if (type === 3) { // 文本节点
-                    el = document.createTextNode(vnode.value);
+                    var that = this
+                    let val = vnode.value.replace(/\{\{(.+?)\}\}/, (a, g) => {
+                        return that.getValBydeepPath(g)
+                    })
+                    el = document.createTextNode(val);
                 } else if (type === 1) { // 元素
                     el = document.createElement(vnode.tag)
                     let attrKeys = Object.keys(vnode.data);
@@ -95,9 +99,13 @@
 
                 return el
             }
+            mount(){
+                this.$el.parentNode.replaceChild()
+            }
             getValBydeepPath(path) { // 得到深层次的属性 目前仅支持 . 不支持 [""]
                 let paths = path.split(".");
                 let res = this._data;
+                let key;
                 while (key = paths.shift()) {
                     res = res[key]
                 }
