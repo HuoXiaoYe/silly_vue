@@ -19,7 +19,7 @@
     <script>
         class VNode {
             constructor(tag, data, value, type) {
-                this.tag = tag&&tag.toLowerCase();
+                this.tag = tag && tag.toLowerCase();
                 this.data = data;
                 this.value = value
                 this.type = type;
@@ -36,12 +36,12 @@
                 this._data = options.data
                 this.compiler()
             }
-            compiler() { // 将模板转化为虚拟DOM
+            compiler() {
                 this._Vnode = this.getVirtualDom(this.$el)
                 console.log(this._Vnode)
             }
 
-            getVirtualDom(node) {
+            getVirtualDom(node) { // 将模板转化为虚拟DOM
                 let el = null;
                 let type = node.nodeType
                 if (type === 1) { //元素节点
