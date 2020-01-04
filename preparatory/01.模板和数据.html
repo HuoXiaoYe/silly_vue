@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="root">
+        <p>{{message}}</p>
+        <ul>
+            <li>{{info.name}}</li>
+            <li>{{info.age}}</li>
+        </ul>
+    </div>
+    <script>
+        class VNode {
+            constructor(tag, data, value, type) {
+                this.tag = tag&&tag.toLowerCase();
+                this.data = data;
+                this.value = value
+                this.type = type;
+                this.children = [];
+            }
+            append(node) {
+                this.children.push(node)
+            }
+        }
+        class SillyVue {
+            constructor(options) {
+                // console.log(el)
+                this.$el = document.querySelector(options.el);
+                this._data = options.data
+                this.compiler()
+            }
+            compiler() { // 将模板转化为虚拟DOM
+                this._Vnode = this.getVirtualDom(this.$el)
+                console.log(this._Vnode)
+            }
+
+            getVirtualDom(node) {
+                let el = null;
+                let type = node.nodeType
+                if (type === 1) { //元素节点
+                    let tag = node.nodeName;
+                    let data = {};
+                    let _attr = node.attributes;
+                    for (let i = 0; i < _attr.length; i++) {
+                        data[_attr[i].nodeName] = _attr[i].nodeValue
+                    }
+                    let value = undefined;
+                    el = new VNode(tag, data, value, type)
+
+                    let childNodes = node.childNodes;
+                    for (let i = 0; i < childNodes.length; i++) {
+                        el.append(this.getVirtualDom(childNodes[i]))
+                    }
+                } else if (type === 3) { // 文本节点
+                    let tag = undefined;
+                    let value = node.nodeValuel
+                    let el = new VNode(tag, undefined, value, type)
+                }
+                return el;
+            }
+
+        }
+
+        var app = new SillyVue({
+            el: "#root",
+            data: {
+            }
+        })
+
+    </script>
+</body>
+
+</html>
