@@ -72,10 +72,9 @@
             render() {
                 console.log(this._Vnode)
                 let realDom = this.VDomToRealDom(this._Vnode)
-                console.log(realDom)
+                this.mount(realDom)
             }
             VDomToRealDom(vnode) { // 将虚拟dom转化为真实的dom
-                // debugger
                 let type = vnode.type;
                 let el = null
                 if (type === 3) { // 文本节点
@@ -99,8 +98,8 @@
 
                 return el
             }
-            mount(){
-                this.$el.parentNode.replaceChild()
+            mount(child) {
+                this.$el.parentNode.replaceChild(child, this.$el)
             }
             getValBydeepPath(path) { // 得到深层次的属性 目前仅支持 . 不支持 [""]
                 let paths = path.split(".");
