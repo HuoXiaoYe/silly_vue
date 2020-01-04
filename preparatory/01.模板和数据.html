@@ -31,10 +31,10 @@
         }
         class SillyVue {
             constructor(options) {
-                // console.log(el)
                 this.$el = document.querySelector(options.el);
                 this._data = options.data
                 this.compiler()
+                this.rg = /\{\{(.+?)\}\}/g // 正则表达式 匹配括号
             }
             compiler() {
                 this._Vnode = this.getVirtualDom(this.$el)
@@ -65,12 +65,28 @@
                 }
                 return el;
             }
+            VDomToRealDom() { // 将虚拟dom转化为真实的dom
+
+            }
+            getValBydeepPath(path) { // 得到深层次的属性 目前仅支持 . 不支持 [""]
+                let paths = path.split(".");
+                let res = this._data;
+                while (key = paths.shift()) {
+                    res = res[key]
+                }
+                return res
+            }
 
         }
 
         var app = new SillyVue({
             el: "#root",
             data: {
+                message: "你好 霍小叶",
+                info: {
+                    name: "霍小叶",
+                    age: 20
+                }
             }
         })
 
