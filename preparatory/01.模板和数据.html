@@ -39,9 +39,12 @@
             compiler() {
                 this._Vnode = this.getVirtualDom(this.$el)
                 console.log(this._Vnode)
+                this.render()
+
             }
 
             getVirtualDom(node) { // 将模板转化为虚拟DOM
+                // debugger
                 let el = null;
                 let type = node.nodeType
                 if (type === 1) { //元素节点
@@ -60,13 +63,37 @@
                     }
                 } else if (type === 3) { // 文本节点
                     let tag = undefined;
-                    let value = node.nodeValuel
+                    let value = node.nodeValue
                     let el = new VNode(tag, undefined, value, type)
+                    return el
                 }
-                return el;
+                return el
             }
-            VDomToRealDom() { // 将虚拟dom转化为真实的dom
+            render() {
+                console.log(this._Vnode)
+                let realDom = this.VDomToRealDom(this._Vnode)
+                console.log(realDom)
+            }
+            VDomToRealDom(vnode) { // 将虚拟dom转化为真实的dom
+                // debugger
+                let type = vnode.type;
+                let el = null
+                if (type === 3) { // 文本节点
+                    el = document.createTextNode(vnode.value);
+                } else if (type === 1) { // 元素
+                    el = document.createElement(vnode.tag)
+                    let attrKeys = Object.keys(vnode.data);
+                    attrKeys.forEach(key => {
+                        el.setAttribute(key, vnode.data[key])
+                    })
+                    vnode.children.forEach(item => {
+                        if (item !== null) {
+                            el.appendChild(this.VDomToRealDom(item))
+                        }
+                    })
+                }
 
+                return el
             }
             getValBydeepPath(path) { // 得到深层次的属性 目前仅支持 . 不支持 [""]
                 let paths = path.split(".");
