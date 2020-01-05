@@ -8,6 +8,7 @@ function defineReactive(target, attr, enumerable, value) {
             return value
         },
         set(newVal) {
+            console.log(`你想设置${attr}的值`)
             value = newVal
         },
         enumerable: !!enumerable,
