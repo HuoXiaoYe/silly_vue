@@ -22,5 +22,3 @@ ARRAY_METHOD.forEach(method => {
 })
 
 Arr.__proto__ = array_method
-
-Arr.push(1, 2, 3)
