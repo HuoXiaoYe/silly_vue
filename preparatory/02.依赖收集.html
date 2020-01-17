@@ -11,78 +11,63 @@
 <body>
     <div>dsaf</div>
     <script>
-
-        let defineReactives = (obj, key, val) => {
-            const dep = new Dep()
-            var m = new Watcher()
-            Object.defineProperty(obj, key, {
-                enumerable: true,
-                configurable: true,
-                get() {
-                    dep.add(Dep.target)
-                    console.log("set增加")
-                    set.add(Dep.target)
-                    return val
-                },
-                set(newVal) {
-                    dep.notify(newVal)
-                    val = newVal
-                }
-            })
-            if (typeof val === "object") {
-                observer(val)
-            }
-            Dep.target = null
-
-        }
-
-        function observer(obj) {
-            Object.keys(obj).forEach(item => {
-                defineReactives(obj, item, obj[item])
-            })
-        }
-
-
-        var set = new Set()
-        class Dep {
+        class Pub {
             constructor() {
                 this.sub = []
             }
-            add(sub) {
+            addSub(sub) {
                 this.sub.push(sub)
             }
-            notify(newVal) {
+            notify() {
                 this.sub.forEach(item => {
-                    item.upload(newVal)
+                    item.upload()
                 })
             }
         }
-
         class Watcher {
             constructor() {
-                Dep.target = this
+                Pub.target = this
             }
-            upload(v) {
-                console.log(`更新了~~新的值为${v}`)
+            upload() {
+                console.log("视图更新了")
             }
         }
-
-        // Dep.target = null
-
-
 
 
         class Vue {
             constructor(options) {
-                this._data = options.data;
-                observer(this._data);
-                /* 新建一个 Watcher 观察者对象，这时候 Dep.target 会指向这个 Watcher 对象 */
-                new Watcher();
-                /* 在这里模拟 render 的过程，为了触发 test 属性的 get 函数 */
-                console.log('render~', this._data.age);
-                console.log('render~', this._data.name.firstName);
-                console.log('render~', this._data.name.lastName);
-                console.log(set.size)
+                new Watcher()
+                this._data = options.data
+                this.observer(this._data)
+                console.log(this._data.age)
+                console.log(this._data.name.firstName)
+                console.log(this._data.name.lastName)
+            }
+
+            defineReactives(obj, key, val) {
+                var p = new Pub()
+                Object.defineProperty(obj, key, {
+                    enumerable: true,
+                    configurable: true,
+                    get() {
+                        p.addSub(Pub.target)
+                        return val
+                    },
+                    set(newVal) {
+                        p.notify()
+                        val = newVal
+                    }
+                })
+
+                if (typeof val === "object") {
+                    this.observer(val)
+                }
+            }
+            observer(obj) {
+                if (!obj || typeof obj !== 'object') return
+                Object.keys(obj).forEach(item => {
+                    this.defineReactives(obj, item, obj[item])
+                })
             }
         }
 
