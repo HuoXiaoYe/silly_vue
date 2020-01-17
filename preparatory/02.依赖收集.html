@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>dsaf</div>
+    <script>
+
+        let defineReactives = (obj, key, val) => {
+            const dep = new Dep()
+            var m = new Watcher()
+            Object.defineProperty(obj, key, {
+                enumerable: true,
+                configurable: true,
+                get() {
+                    dep.add(Dep.target)
+                    console.log("set增加")
+                    set.add(Dep.target)
+                    return val
+                },
+                set(newVal) {
+                    dep.notify(newVal)
+                    val = newVal
+                }
+            })
+            if (typeof val === "object") {
+                observer(val)
+            }
+            Dep.target = null
+
+        }
+
+        function observer(obj) {
+            Object.keys(obj).forEach(item => {
+                defineReactives(obj, item, obj[item])
+            })
+        }
+
+
+        var set = new Set()
+        class Dep {
+            constructor() {
+                this.sub = []
+            }
+            add(sub) {
+                this.sub.push(sub)
+            }
+            notify(newVal) {
+                this.sub.forEach(item => {
+                    item.upload(newVal)
+                })
+            }
+        }
+
+        class Watcher {
+            constructor() {
+                Dep.target = this
+            }
+            upload(v) {
+                console.log(`更新了~~新的值为${v}`)
+            }
+        }
+
+        // Dep.target = null
+
+
+
+
+        class Vue {
+            constructor(options) {
+                this._data = options.data;
+                observer(this._data);
+                /* 新建一个 Watcher 观察者对象，这时候 Dep.target 会指向这个 Watcher 对象 */
+                new Watcher();
+                /* 在这里模拟 render 的过程，为了触发 test 属性的 get 函数 */
+                console.log('render~', this._data.age);
+                console.log('render~', this._data.name.firstName);
+                console.log('render~', this._data.name.lastName);
+                console.log(set.size)
+            }
+        }
+
+        var app = new Vue({
+            data: {
+                age: 20,
+                name: {
+                    firstName: "tuanjie",
+                    lastName: "zhang"
+                }
+            }
+        })
+
+    </script>
+</body>
+
+</html>
