@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>dsaf</div>
+    <script>
+        var info = {
+            age: 20,
+            name: {
+                firstName: "tuanjie",
+                lastName: "zhang"
+            }
+        }
+        let defineReactives = (obj, key, val) => {
+            Object.defineProperty(obj, key, {
+                enumerable: true,
+                configurable: true,
+                get() {
+                    console.log(`获取了${key}属性`)
+                    return val
+                },
+                set(newVal) {
+                    console.log(`设置了${key}属性，值为${newVal}`)
+                    val = newVal
+                }
+            })
+            if (typeof val === "object") {
+                reactive(val)
+            }
+        }
+
+        function reactive(obj) {
+            Object.keys(obj).forEach(item => {
+                defineReactives(obj, item, obj[item])
+            })
+        }
+        reactive(info)
+
+    </script>
+</body>
+
+</html>
